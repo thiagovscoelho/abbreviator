@@ -82,7 +82,7 @@ Type in the first box, watch the second box transform.
 | **-tion** |    श   | nation     | → | naश       |
 | **-ship** |   🚢   | friendship | → | friend🚢  |
 | **-ing**  |   𝑛   | running    | → | run𝑛     |
-| **-ed**   |   𝑑   | replaced   | → | replace𝑑 |
+| **-ed**   |   𝑑   | replaced   | → | replae𝑑 |
 | **-er**   |   𝑟   | builder    | → | build𝑟   |
 | **-ers**  |   𝑟s  | players    | → | play𝑟s   |
 | **-or**   |   𝓇   | creator    | → | creat𝓇   |
