@@ -38,7 +38,7 @@ Type in the first box, watch the second box transform.
 | am     | **𝐦** | an      | **𝐧** | and       |  **&** |
 | any    |    ✲   | are     | **𝐫** | as        |    ∷   |
 | at     |  **@** | be      | **𝐛** | because   |    ∵   |
-| been   |   🚮   | before  |   🌅   | both      |    ⊓   |
+| been   |   🚮   | before  |   ≺   | both      |    ⊓   |
 | but    |    ⧹   | by      | **𝐛** | call      |   📞   |
 | can    |   🥫   | could   |    ◇   | different |    ≠   |
 | during |    ∥   | each    | **𝐞** | first     |   🥇   |
