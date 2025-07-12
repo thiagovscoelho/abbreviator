@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Word Abbreviator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      line-height: 1.55;
+      padding: 1.25rem;
+      max-width: 960px;
+      margin: auto;
+    }
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      padding: 0.8rem 1rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 0.5rem;
+      box-sizing: border-box;
+      resize: vertical;
+    }
+    h1, h2 {
+      font-weight: 600;
+      margin: 1.2rem 0 0.75rem;
+    }
+    .controls {
+      margin: 1.25rem 0;
+    }
+    label {
+      margin-right: 1.5rem;
+      cursor: pointer;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Live Word Abbreviator</h1>
+
+  <div class="controls">
+    <label><input type="radio" name="mode" value="abbreviate" checked> Abbreviate</label>
+    <label><input type="radio" name="mode" value="unabbreviate"> Un‑abbreviate</label>
+  </div>
+
+  <textarea id="input" placeholder="Type here …"></textarea>
+
+  <h2>Output</h2>
+  <textarea id="output" readonly placeholder="Converted text will appear here …"></textarea>
+
+  <script>
+    (function () {
+      /* -------------------------------------------------- */
+      /* Data                                               */
+      /* -------------------------------------------------- */
+      const wordMap = {
+        "the": "τ", "of": "∩", "and": "&", "to": "⇒", "in": "⊆", "is": "∈", "was": "ω", "that": "那",
+        "for": "𝟒", "as": "∷", "with": "𝐰", "by": "𝐛", "on": "🔛", "are": "𝐫", "from": "⊸", "be": "𝐛",
+        "or": "∨", "his": "▴", "were": "ώ", "it": "▶", "an": "𝐧", "at": "@", "not": "¬", "which": "⦂",
+        "have": "⋑", "he": "▲", "had": "⊐", "this": "这", "has": "⊃", "also": "∧", "their": "◂", "but": "⧹",
+        "one": "𝟏", "can": "🥫", "its": "▸", "other": "≢", "been": "🚮", "more": ">", "they": "◀", "used": "유",
+        "first": "🥇", "all": "∀", "two": "2", "than": "⊱", "up": "🆙", "your": "𒌨", "look": "👀", "think": "🧠",
+        "want": "要", "us": "𝑠", "you": "𝐮", "am": "𝐦", "into": "➲", "would": "🪵", "only": "①", "time": "🕰️", 
+        "who": "👤", "most": "⊤", "may": "◆", "such": "∋", "some": "∃", "many": "∞", "when": "𝑡", "after": "≻", 
+        "between": "≬", "over": "⧸", "these": "🥜", "her": "▽", "about": "~", "there": "📍", "use": "🔧", 
+        "no": "∄", "them": "◁", "new": "🆕", "him": "△", "will": "⇛", "out": "出", "during": "∥", "made": "🜔", 
+        "both": "⊓", "then": "→", "often": "◕", "so": "☰", "any": "✲", "being": "🫘", "where": "🗺️", "number": "№",
+        "could": "◇", "main": "📌", "through": "⇀", "system": "🌌", "people": "👥", "known": "κ", "each": "𝐞",
+        "while": "⏲️", "if": "𝐶", "call": "📞", "same": "=", "later": "🌇", "three": "3", "because": "∵",
+        "well": "🚰", "work": "𝑊", "before": "🌅", "different": "≠", "she": "▼", "small": "ϵ", "less": "<",
+        "four": "4", "hers": "▿", "theirs": "◃"
+      };
+
+      const suffixMap = {
+        "tion": "श", "ship": "🚢", "ing": "𝑛", "ed": "𝑑", "er": "𝑟", "ers": "𝑟s", "or": "𝓇", "ors": "𝓇s"
+      };
+
+      /* -------------------------------------------------- */
+      /* Reverse maps                                       */
+      /* -------------------------------------------------- */
+      const reverseWordMap = Object.fromEntries(
+        Object.entries(wordMap).map(([k, v]) => [v, k])
+      );
+      const reverseSuffixMap = Object.fromEntries(
+        Object.entries(suffixMap).map(([k, v]) => [v, k])
+      );
+
+      /* -------------------------------------------------- */
+      /* DOM                                                */
+      /* -------------------------------------------------- */
+      const inputEl = document.getElementById("input");
+      const outputEl = document.getElementById("output");
+
+      /* -------------------------------------------------- */
+      /* Helpers                                            */
+      /* -------------------------------------------------- */
+      // Escape a string to be used in the body of new RegExp()
+      const esc = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+      // Sort suffixes longest‑to‑shortest so longer matches win first
+      const suffixEntries = Object.entries(suffixMap).sort((a, b) => b[0].length - a[0].length);
+      const suffixEntriesRev = Object.entries(reverseSuffixMap).sort((a, b) => b[0].length - a[0].length);
+
+      // A minimal boundary definition: letter/number/underscore (Unicode‑aware)
+      const BASE_BOUNDARY = "\\p{L}\\p{N}_"; // note: used inside a character‑class later
+
+      // Construct a regex that matches `token` only when it is not immediately
+      // preceded/followed by BASE_BOUNDARY characters. Works in all modern
+      // engines supporting lookahead (and *optional* lookbehind).
+      function wholeTokenRegex(token) {
+        // Leading boundary (captured so we can keep it in replacement)
+        const before = `(^|[^${BASE_BOUNDARY}])`;
+        // Trailing boundary checked with a look‑ahead — we don't want to consume it
+        const after  = `(?=[^${BASE_BOUNDARY}]|$)`;
+        return new RegExp(`${before}${esc(token)}${after}`, "gu");
+      }
+
+      /* -------------------------------------------------- */
+      /* Forward (English ➜ Abbreviated)                    */
+      /* -------------------------------------------------- */
+      function abbreviate(text) {
+        // Whole‑word replacements (case‑insensitive)
+        for (const [word, abbr] of Object.entries(wordMap)) {
+          const re = new RegExp(`\\b${word}\\b`, "gi");
+          text = text.replace(re, abbr);
+        }
+        // Suffix replacements
+        for (const [suf, abbr] of suffixEntries) {
+          const re = new RegExp(`${suf}\\b`, "gi");
+          text = text.replace(re, abbr);
+        }
+        return text;
+      }
+
+      /* -------------------------------------------------- */
+      /* Reverse (Abbreviated ➜ English)                    */
+      /* -------------------------------------------------- */
+      function unabbreviate(text) {
+        // Symbol tokens back to full words
+        for (const [abbr, word] of Object.entries(reverseWordMap)) {
+          text = text.replace(wholeTokenRegex(abbr), (_, lead) => `${lead}${word}`);
+        }
+        // Suffix symbols back to endings
+        for (const [abbr, suf] of suffixEntriesRev) {
+          const re = new RegExp(esc(abbr), "g");
+          text = text.replace(re, suf);
+        }
+        return text;
+      }
+
+      /* -------------------------------------------------- */
+      /* Glue                                               */
+      /* -------------------------------------------------- */
+      function convert() {
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+        outputEl.value = (mode === "abbreviate")
+          ? abbreviate(inputEl.value)
+          : unabbreviate(inputEl.value);
+      }
+
+      inputEl.addEventListener("input", convert);
+      document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", convert));
+
+      // Initial run (in case there is pre‑filled content)
+      convert();
+    })();
+  </script>
+</body>
+</html>
