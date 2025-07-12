@@ -1,6 +1,6 @@
 # Live Word Abbreviator
 
-A tiny, client-side utility that **compresses everyday English prose by replacing very common words and suffixes with single Unicode symbols**.  
+A tiny, client-side utility (live [here](https://thiagovscoelho.github.io/abbreviator/)) that **compresses everyday English prose by replacing very common words and suffixes with single Unicode symbols**.  
 Flip the switch and it instantly reverses the process, restoring the original text.
 
 *Why?*  
