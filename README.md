@@ -87,6 +87,7 @@ Type in the first box, watch the second box transform.
 | **-ers**  |   𝑟s  | players    | → | play𝑟s   |
 | **-or**   |   𝓇   | creator    | → | creat𝓇   |
 | **-ors**  |   𝓇s  | investors  | → | invest𝓇s |
+| **-ss**   |   ß  | moss        | → | moß      |
 
 ---
 
