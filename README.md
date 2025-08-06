@@ -53,7 +53,7 @@ Type in the first box, watch the second box transform.
 | may    |    ◆   | more    |    >   | most      |    ⊤   |
 | new    |   🆕   | no      |    ∄   | not       |    ¬   |
 | number |    №   | of      |    ∩   | often     |    ◕   |
-| on     |   🔛   | one     |   𝟏   | only      |    ①   |
+| on     |   🔛   | one     |   𝟏   | only      |    只   |
 | or     |    ∨   | other   |    ≢   | out       |    出   |
 | over   |    ⧸   | people  |   👥   | same      |    =   |
 | she    |    ▼   | small   |    ϵ   | so        |    ☰   |
@@ -69,7 +69,7 @@ Type in the first box, watch the second box transform.
 | were   |    ώ   | when    |   𝑡   | where     |   🗺️  |
 | which  |    ⦂   | who     |   👤   | will      |    ⇛   |
 | with   |   𝐰   | work    |   𝑊   | would     |   🪵   |
-| you    |   𝐮   | your    |   𒌨   | —         |    —   |
+| you    |   𝐮   | your    |   𒌨   | again         |    又   |
 
 ¹*See the suffix table below.*
 
