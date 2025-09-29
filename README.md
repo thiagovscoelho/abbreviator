@@ -70,6 +70,7 @@ Type in the first box, watch the second box transform.
 | which  |    ⦂   | who     |   👤   | will      |    ⇛   |
 | with   |   𝐰   | work    |   𝑊   | would     |   🪵   |
 | you    |   𝐮   | your    |   𒌨   | again         |    又   |
+| therefore    |   ∴   |     |      |          |       |
 
 ¹*See the suffix table below.*
 
